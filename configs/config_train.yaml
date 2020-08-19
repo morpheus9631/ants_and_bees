@@ -1,11 +1,11 @@
 # config_train.yaml
 
 WORK:
-  # ROOT_PATH: "D:\\GitWork\\ants_and_bees\\"
-  ROOT_PATH: "/home/user/work/ants_and_bees/"
+  ROOT_PATH: "D:\\GitWork\\ants_and_bees\\"
+  # ROOT_PATH: "/home/user/work/ants_and_bees/"
               
 DATA:
-  # ROOT_PATH: "D:\\Dataset\\hymenoptera_data\\"
-  ROOT_PATH: "/home/user/work/ants_and_bees/data/"
+  ROOT_PATH: "D:\\GitWork\\ants_and_bees\\data\\"
+  # ROOT_PATH: "/home/user/work/ants_and_bees/data/"
   TRAIN_DIR: "train"
   VALIDATE_DIR: "test"

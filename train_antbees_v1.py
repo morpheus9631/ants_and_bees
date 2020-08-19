@@ -1,19 +1,25 @@
-# License: BSD
-# Author: Sasank Chilamkurthy
+# Author: Morpehus Hsieh (morpheus.hsieh@gmail.com)
 
-from __future__ import print_function, division
+import os, sys
+from configs.config_train import get_cfg_defaults
+
+import argparse
+import copy
+import numpy as np
+import time
 
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from torch.optim import lr_scheduler
-import numpy as np
 import torchvision
+from torch.optim import lr_scheduler
 from torchvision import datasets, models, transforms
-import matplotlib.pyplot as plt
-import time
-import os
-import copy
+
+def parse_args(**kwargs):
+    parser = argparse.ArgumentParser(description='Ants and Bees by PyTorch')
+    parser.add_argument("--cfg", type=str, default="configs/config_train.yaml",
+                        help="Configuration filename.")
+    return parser.parse_args(**kwargs)
 
 
 def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
@@ -112,6 +118,18 @@ def visualize_model(model, num_images=6):
         model.train(mode=was_training)
 
 def main():
+    global args
+    args = parse_args()
+    # print(args)
+
+    # training config
+    global cfg             
+    cfg = get_cfg_defaults()
+    cfg.merge_from_file(args.cfg)
+    cfg.freeze()
+    print(cfg)
+
+
     mean_ary = [0.485, 0.456, 0.406]
     std_ary  = [0.229, 0.224, 0.225]
 
@@ -132,7 +150,8 @@ def main():
         ]),
     }
 
-    data_dir = 'data\\hymenoptera_data\\'
+    data_dir = os.path.join(cfg.DATA.ROOT_PATH, 'hymenoptera_data')
+
     image_datasets = {
         x: datasets.ImageFolder(os.path.join(data_dir, x), data_transforms[x])
         for x in ['train', 'val']
