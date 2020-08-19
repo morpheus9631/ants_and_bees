@@ -1,0 +1,9 @@
+# config_train.yaml
+
+WORK:
+  ROOT_PATH: "D:\\GitWork\\ants_and_bees\\"
+              
+DATA:
+  ROOT_PATH: "D:\\Dataset\\hymenoptera_data\\"
+  TRAIN_DIR: "train"
+  VALIDATE_DIR: "test"
