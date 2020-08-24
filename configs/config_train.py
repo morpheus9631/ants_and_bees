@@ -8,10 +8,8 @@ _C.WORK.ROOT_PATH = "D:\\GitWork\\ants_and_bees\\"
 # _C.WORK.ROOT_PATH = "/home/user/work/ants_and_bees/"
 
 _C.DATA = CN()
-_C.DATA.ROOT_PATH = "D:\\GitWork\\ants_and_bees\\data\\"
-# _C.DATA.ROOT_PATH = "/home/user/work/ants_and_bees/data/"
-_C.DATA.TRAIN_DIR = "train"
-_C.DATA.VALIDATE_DIR = "val"
+_C.DATA.ROOT_PATH = "D:\\GitWork\\ants_and_bees\\data\\hymenoptera_data\\"
+# _C.DATA.ROOT_PATH = "/home/user/work/ants_and_bees/data/hymenoptera_data/"
 
 
 def get_cfg_defaults():
