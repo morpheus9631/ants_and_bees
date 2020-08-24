@@ -1,3 +1,4 @@
+# train.py
 # Author: Morpehus Hsieh (morpheus.hsieh@gmail.com)
 
 from __future__ import print_function, division
@@ -6,26 +7,28 @@ import os, sys
 from configs.config_train import get_cfg_defaults
 
 import argparse
-import copy
 import numpy as np
+import copy
 import time
 
 import torch
 import torch.nn as nn
 import torch.optim as optim
-import torchvision
 from torch.optim import lr_scheduler
+import torchvision
 from torchvision import datasets, models, transforms
 
 
-def parse_args(**kwargs):
+def parse_args():
     parser = argparse.ArgumentParser(description='Ants and Bees by PyTorch')
     parser.add_argument("--cfg", type=str, default="configs/config_train.yaml",
                         help="Configuration filename.")
-    return parser.parse_args(**kwargs)
+    return parser.parse_args()
 
 
-def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
+def train_model(dataloaders, device, dataset_sizes, 
+    model, criterion, optimizer, scheduler, num_epochs=25):
+
     since = time.time()
 
     best_model_wts = copy.deepcopy(model.state_dict())
@@ -95,15 +98,14 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
 
 
 def main():
-    global args
     args = parse_args()
     print(args)
 
-    global cfg
     cfg = get_cfg_defaults()
     cfg.merge_from_file(args.cfg)
     cfg.freeze()
     print(cfg)
+    print()
 
     mean_ary = [0.485, 0.456, 0.406]
     std_ary  = [0.229, 0.224, 0.225]
@@ -132,18 +134,15 @@ def main():
         for x in ['train', 'val']
     }
     
-    global dataloaders
     dataloaders = {
         x: torch.utils.data.DataLoader(
             image_datasets[x], batch_size=4, shuffle=True, num_workers=4
         ) for x in ['train', 'val']
     }
 
-    global dataset_sizes
     dataset_sizes = {x: len(image_datasets[x]) for x in ['train', 'val']}
     class_names = image_datasets['train'].classes
 
-    global device
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
     model_ft = models.resnet18(pretrained=True)
@@ -165,9 +164,10 @@ def main():
 
 
     model_ft = train_model(
-        model_ft, criterion, optimizer_ft, exp_lr_scheduler, num_epochs=25
+        dataloaders, device, dataset_sizes,
+        model_ft, criterion, optimizer_ft, exp_lr_scheduler, num_epochs=25,
     )
-    return (0)
+    return(0)
 
 
 if __name__ == '__main__':
