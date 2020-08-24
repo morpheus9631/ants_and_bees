@@ -1,5 +1,7 @@
 # Author: Morpehus Hsieh (morpheus.hsieh@gmail.com)
 
+from __future__ import print_function, division
+
 import os, sys
 from configs.config_train import get_cfg_defaults
 
@@ -14,6 +16,7 @@ import torch.optim as optim
 import torchvision
 from torch.optim import lr_scheduler
 from torchvision import datasets, models, transforms
+
 
 def parse_args(**kwargs):
     parser = argparse.ArgumentParser(description='Ants and Bees by PyTorch')
@@ -91,39 +94,12 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
     return model
 
 
-def visualize_model(model, num_images=6):
-    was_training = model.training
-    model.eval()
-    images_so_far = 0
-    fig = plt.figure()
-
-    with torch.no_grad():
-        for i, (inputs, labels) in enumerate(dataloaders['val']):
-            inputs = inputs.to(device)
-            labels = labels.to(device)
-
-            outputs = model(inputs)
-            _, preds = torch.max(outputs, 1)
-
-            for j in range(inputs.size()[0]):
-                images_so_far += 1
-                ax = plt.subplot(num_images//2, 2, images_so_far)
-                ax.axis('off')
-                ax.set_title('predicted: {}'.format(class_names[preds[j]]))
-                imshow(inputs.cpu().data[j])
-
-                if images_so_far == num_images:
-                    model.train(mode=was_training)
-                    return
-        model.train(mode=was_training)
-
 def main():
     global args
     args = parse_args()
-    # print(args)
+    print(args)
 
-    # training config
-    global cfg             
+    global cfg
     cfg = get_cfg_defaults()
     cfg.merge_from_file(args.cfg)
     cfg.freeze()
@@ -149,7 +125,7 @@ def main():
         ]),
     }
 
-    data_dir = os.path.join(cfg.DATA.ROOT_PATH, 'hymenoptera_data')
+    data_dir = cfg.DATA.ROOT_PATH
 
     image_datasets = {
         x: datasets.ImageFolder(os.path.join(data_dir, x), data_transforms[x])
@@ -191,6 +167,7 @@ def main():
     model_ft = train_model(
         model_ft, criterion, optimizer_ft, exp_lr_scheduler, num_epochs=25
     )
+    return (0)
 
 
 if __name__ == '__main__':
