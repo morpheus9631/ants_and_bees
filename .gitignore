@@ -1,4 +1,20 @@
-#.gitignore
-.ipynb_checkpoints/
-data/hymenoptera_data/
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Jupyter Notebook
+.ipynb_checkpoints
+ipynb/.ipynb_checkpoints/
+Untitled.ipynb
+
+# Data Files
+processed/
+raw/*
+!raw/*/
+!raw/*.zip
+!raw/*.gz
+
+
+
 
