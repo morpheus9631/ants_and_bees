@@ -5,6 +5,7 @@ WORK:
               
 DATA:
   RAW_PATH: "D:\\GitWork\\ants_and_bees\\raw\\"
+  RAW_FNAME: "hymenoptera_data.zip"
   PROCESSED_PATH: "D:\\GitWork\\ants_and_bees\\processed\\"
 
 TRAIN:

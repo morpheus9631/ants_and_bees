@@ -4,7 +4,8 @@ WORK:
   ROOT_PATH: "/home/user/work/ants_and_bees/"
               
 DATA:
-  ROOT_PATH: "/home/user/work/ants_and_bees/raw/"
+  RAW_PATH: "/home/user/work/ants_and_bees/raw/"
+  RAW_FNAME: "hymenoptera_data.zip"
   PROCESSED_PATH: "/home/user/work/ants_and_bees/processed/"
 
 TRAIN:
