@@ -12,7 +12,6 @@ processed/
 raw/*
 !raw/*/
 !raw/*.zip
-!raw/*.gz
 
 
 

@@ -8,6 +8,7 @@ _C.WORK.ROOT_PATH = ""
 
 _C.DATA = CN()
 _C.DATA.RAW_PATH = ""
+_C.DATA.RAW_FNAME = ""
 _C.DATA.PROCESSED_PATH = ""
 
 _C.TRAIN = CN()

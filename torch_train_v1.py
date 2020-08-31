@@ -9,6 +9,8 @@ import argparse
 import copy
 import numpy as np
 import time
+import shutil
+import zipfile
 
 import torch
 import torch.nn as nn
@@ -24,6 +26,19 @@ def parse_args():
     parser.add_argument("--cfg", type=str, default="configs/config_train.yaml",
                         help="Configuration filename.")
     return parser.parse_args()
+
+def decompressImages(procPath, zipAbspath):
+    with zipfile.ZipFile(zipAbspath, 'r') as zip_ref:
+        zip_ref.extractall(procPath)
+        data_path = os.path.join(procPath, 'hymenoptera_data')
+        
+        list_dir = os.listdir(data_path)
+        for sub_dir in list_dir:
+            move_path = os.path.join(data_path, sub_dir)
+            print(move_path)
+            shutil.move(move_path, procPath)
+        shutil.rmtree(data_path)
+    return
 
 
 def train_model(dataloaders, device, dataset_sizes, 
@@ -106,6 +121,18 @@ def main():
     cfg.freeze()
     print('\n', cfg)
 
+    ProcPath = cfg.DATA.PROCESSED_PATH
+
+    # If image data not exist then decompress
+    RawPath  = cfg.DATA.RAW_PATH
+    RawFname = cfg.DATA.RAW_FNAME
+    ZipAbspath = os.path.join(RawPath, RawFname)
+
+    isExist = os.path.exists(ProcPath)
+    if not isExist: 
+        decompressImages(ProcPath, ZipAbspath)
+
+    # Normalize
     normalize = transforms.Normalize(
         mean = [0.485, 0.456, 0.406],
         std  = [0.229, 0.224, 0.225]
@@ -131,8 +158,6 @@ def main():
     print('\nClass names: ', ClassNames)
 
     # Datasets
-    ProcPath = cfg.DATA.PROCESSED_PATH
-
     image_datasets = {
         x: datasets.ImageFolder(os.path.join(ProcPath, x), data_transforms[x])
         for x in ClassNames
