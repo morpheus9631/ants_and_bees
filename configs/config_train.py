@@ -4,12 +4,18 @@ from yacs.config import CfgNode as CN
 _C = CN()
 
 _C.WORK = CN()
-_C.WORK.ROOT_PATH = "D:\\GitWork\\ants_and_bees\\"
-# _C.WORK.ROOT_PATH = "/home/user/work/ants_and_bees/"
+_C.WORK.ROOT_PATH = ""
 
 _C.DATA = CN()
-_C.DATA.ROOT_PATH = "D:\\GitWork\\ants_and_bees\\data\\hymenoptera_data\\"
-# _C.DATA.ROOT_PATH = "/home/user/work/ants_and_bees/data/hymenoptera_data/"
+_C.DATA.RAW_PATH = ""
+_C.DATA.PROCESSED_PATH = ""
+
+_C.TRAIN = CN()
+_C.TRAIN.BATCH_SIZE = 4
+_C.TRAIN.NUM_WORKERS = 4
+_C.TRAIN.NUM_EPOCHS = 25
+_C.TRAIN.LEARNING_RATE = 0.001
+_C.TRAIN.MOMENTUM = 0.9
 
 
 def get_cfg_defaults():

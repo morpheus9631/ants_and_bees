@@ -1,4 +1,3 @@
-# train.py
 # Author: Morpehus Hsieh (morpheus.hsieh@gmail.com)
 
 from __future__ import print_function, division
@@ -7,15 +6,16 @@ import os, sys
 from configs.config_train import get_cfg_defaults
 
 import argparse
-import numpy as np
 import copy
+import numpy as np
 import time
 
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from torch.optim import lr_scheduler
 import torchvision
+from torch.optim import lr_scheduler
+from torch.utils.data import DataLoader
 from torchvision import datasets, models, transforms
 
 
@@ -104,69 +104,87 @@ def main():
     cfg = get_cfg_defaults()
     cfg.merge_from_file(args.cfg)
     cfg.freeze()
-    print(cfg)
-    print()
+    print('\n', cfg)
 
-    mean_ary = [0.485, 0.456, 0.406]
-    std_ary  = [0.229, 0.224, 0.225]
+    trans_mean = [0.485, 0.456, 0.406]
+    trans_std  = [0.229, 0.224, 0.225]
 
-    # Data augmentation and normalization for training
-    # Just normalization for validation
-    data_transforms = {
-        'train': transforms.Compose([
-            transforms.RandomResizedCrop(224),
-            transforms.RandomHorizontalFlip(),
-            transforms.ToTensor(),
-            transforms.Normalize(mean_ary, std_ary)
-        ]),
-        'val': transforms.Compose([
-            transforms.Resize(256),
-            transforms.CenterCrop(224),
-            transforms.ToTensor(),
-            transforms.Normalize(mean_ary, std_ary)
-        ]),
-    }
-
-    data_dir = cfg.DATA.ROOT_PATH
-
-    image_datasets = {
-        x: datasets.ImageFolder(os.path.join(data_dir, x), data_transforms[x])
-        for x in ['train', 'val']
-    }
-    
-    dataloaders = {
-        x: torch.utils.data.DataLoader(
-            image_datasets[x], batch_size=4, shuffle=True, num_workers=4
-        ) for x in ['train', 'val']
-    }
-
-    dataset_sizes = {x: len(image_datasets[x]) for x in ['train', 'val']}
-    class_names = image_datasets['train'].classes
-
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
-    model_ft = models.resnet18(pretrained=True)
-    num_ftrs = model_ft.fc.in_features
-    
-    # Here the size of each output sample is set to 2.
-    # Alternatively, it can be generalized to nn.Linear(num_ftrs, len(class_names)).
-    model_ft.fc = nn.Linear(num_ftrs, 2)
-
-    model_ft = model_ft.to(device)
-
-    criterion = nn.CrossEntropyLoss()
-
-    # Observe that all parameters are being optimized
-    optimizer_ft = optim.SGD(model_ft.parameters(), lr=0.001, momentum=0.9)
-
-    # Decay LR by a factor of 0.1 every 7 epochs
-    exp_lr_scheduler = lr_scheduler.StepLR(optimizer_ft, step_size=7, gamma=0.1)
-
-
-    model_ft = train_model(
-        dataloaders, device, dataset_sizes,
-        model_ft, criterion, optimizer_ft, exp_lr_scheduler, num_epochs=25,
+    normalize = transforms.Normalize(
+        mean = trans_mean,
+        std  = trans_std
     )
+
+    # Transforms
+    train_transform = transforms.Compose([
+        transforms.RandomResizedCrop(224),
+        transforms.RandomHorizontalFlip(),
+        transforms.ToTensor(),
+        normalize
+    ])
+
+    valid_transform = transforms.Compose([
+        transforms.ToTensor(),
+        normalize
+    ])
+
+    # Datasets
+    proc_path = cfg.DATA.PROCESSED_PATH
+    trainSet = datasets.ImageFolder(
+        os.path.join(proc_path, 'train'), train_transform
+    )
+
+    validSet = datasets.ImageFolder(
+        os.path.join(proc_path, 'valid'), valid_transform
+    )
+
+    BatchSize = cfg.TRAIN.BATCH_SIZE
+    NumWorkers = cfg.TRAIN.NUM_WORKERS
+    
+    trainLoader = DataLoader(
+        trainSet, batch_size=BatchSize, shuffle=True, num_workers=NumWorkers
+    )
+
+    validLoader = DataLoader(
+        trainSet, batch_size=BatchSize, shuffle=False, num_workers=NumWorkers
+    )
+
+    dataset_sizes = {
+        'train': len(trainSet), 'valid': len(validSet)
+    }
+
+    class_names = trainSet.classes
+    class_to_idx = trainSet.class_to_idx
+    print('\nClass to idx: ', class_to_idx)
+
+    # Use GPU
+    isUseGpu = torch.cuda.is_available()
+    device = torch.device("cuda:0" if isUseGpu else "cpu")
+
+    # Model summary
+    model_ft = models.resnet18(pretrained=True)
+    print(); print(model_ft)
+
+    # num_ftrs = model_ft.fc.in_features
+    
+    # # Here the size of each output sample is set to 2.
+    # # Alternatively, it can be generalized to nn.Linear(num_ftrs, len(class_names)).
+    # model_ft.fc = nn.Linear(num_ftrs, 2)
+
+    # model_ft = model_ft.to(device)
+
+    # criterion = nn.CrossEntropyLoss()
+
+    # # Observe that all parameters are being optimized
+    # optimizer_ft = optim.SGD(model_ft.parameters(), lr=0.001, momentum=0.9)
+
+    # # Decay LR by a factor of 0.1 every 7 epochs
+    # exp_lr_scheduler = lr_scheduler.StepLR(optimizer_ft, step_size=7, gamma=0.1)
+
+
+    # model_ft = train_model(
+    #     dataloaders, device, dataset_sizes,
+    #     model_ft, criterion, optimizer_ft, exp_lr_scheduler, num_epochs=25,
+    # )
     return(0)
 
 
