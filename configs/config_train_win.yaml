@@ -7,10 +7,6 @@ DATA:
   RAW_PATH: "D:\\GitWork\\ants_and_bees\\raw\\"
   PROCESSED_PATH: "D:\\GitWork\\ants_and_bees\\processed\\"
 
-DATASET:
-  TRANSFORM_MEAN: [0.485, 0.456, 0.406]
-  TRANSFORM_STD:  [0.229, 0.224, 0.225]
-
 TRAIN:
   BATCH_SIZE: 4
   NUM_WORKERS: 4
