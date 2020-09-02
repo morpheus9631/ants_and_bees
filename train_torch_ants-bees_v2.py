@@ -226,10 +226,7 @@ def main():
 
     # load best model weights
     model_ft.load_state_dict(best_model_wts)
-    print(best_model_wts)
-
-
-
+    # print(best_model_wts)
     return 
 
 
